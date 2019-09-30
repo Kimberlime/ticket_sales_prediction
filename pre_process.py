@@ -1,5 +1,7 @@
 import os
 import pandas as pd
+from sklearn import preprocessing
+from sklearn.utils import shuffle
 
 
 def one_hot_encode(data: pd.DataFrame, column_name: str) -> pd.DataFrame:
@@ -20,12 +22,12 @@ def one_hot_encode(data: pd.DataFrame, column_name: str) -> pd.DataFrame:
     return encoded_data
 
 
-def pre_process_data(data_path: str, save_file: bool) -> pd.DataFrame:
+def pre_process_data(data_path: str, save_file: bool) -> [pd.DataFrame, pd.Series]:
     """
-    Pre-processes data and returns it.
+    Pre-processes, scale and shuffle data and returns them.
     :param data_path: The path to find data in
-    :param save_file: The boolean which checks whether to save data as a file(preprocessed_data.csv)
-    :return: The pandas DataFrame with pre-processed data
+    :param save_file: The boolean which checks whether to save data as a file(data.csv, labels.csv)
+    :return: The list of data(pandas DataFrame) and labels(pandas Series).
     """
     concert_list = pd.read_csv(os.path.join(data_path, 'concert_list.csv'), parse_dates=['closing_date'])
     artist_list = pd.read_csv(os.path.join(data_path, 'artist_list.csv'))
@@ -80,7 +82,18 @@ def pre_process_data(data_path: str, save_file: bool) -> pd.DataFrame:
         processed_data.at[i, twitter_columns_modified[3]] = valid_twitter_data[twitter_columns[3]].sum()
         processed_data.at[i, twitter_columns_modified[4]] = valid_twitter_data[twitter_columns[4]].sum()
 
-    if save_file:
-        processed_data.to_csv('preprocessed_data.csv', index=False)
+    processed_data = processed_data.dropna()
+    processed_data.pop('artist')
+    processed_data.pop('closing_date')
 
-    return processed_data
+    labels = processed_data.pop('ticket_sales')
+
+    scaler = preprocessing.MinMaxScaler()
+    data = pd.DataFrame(scaler.fit_transform(processed_data))
+    data, labels = shuffle(data, labels)
+
+    if save_file:
+        data.to_csv('data.csv', index=False)
+        labels.to_csv('labels.csv', index=False)
+
+    return data, labels
