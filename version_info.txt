@@ -1,2 +1,6 @@
 v0.0.1
 Implemented data pre-processing function.
+
+v0.0.2
+Moved data pre-processing function to a separate file.
+Applied one-hot encoding for categorical values.
