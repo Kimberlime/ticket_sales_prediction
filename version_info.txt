@@ -8,3 +8,7 @@ Applied one-hot encoding for categorical values.
 v0.0.3
 Dropped rows with missing data.
 Applied MinMaxScaler.
+
+v0.0.4
+Implemented TensorFlow model to predict ticket sales.
+Implemented visualization of loss change and predictions.

@@ -86,7 +86,7 @@ def pre_process_data(data_path: str, save_file: bool) -> [pd.DataFrame, pd.Serie
     processed_data.pop('artist')
     processed_data.pop('closing_date')
 
-    labels = processed_data.pop('ticket_sales')
+    labels = pd.DataFrame(processed_data.pop('ticket_sales'))
 
     scaler = preprocessing.MinMaxScaler()
     data = pd.DataFrame(scaler.fit_transform(processed_data))
